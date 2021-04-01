@@ -1,14 +1,16 @@
 package transaction
 
-import "time"
+import (
+	"bwastartup/user"
+	"time"
+)
 
 type Transaction struct {
-	ID         int
-	CampaignID int
-	UserID     int
-	Amount     int
-	Status     string
-	Code       string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ID        int
+	Amount    int
+	Status    string
+	Code      string
+	User      user.User
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
