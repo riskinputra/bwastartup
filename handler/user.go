@@ -15,19 +15,16 @@ type userHandler struct {
 	authService auth.Service
 }
 
-func NewUserHandler(userSercive user.Service, authService auth.Service) *userHandler {
-	return &userHandler{userSercive, authService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
 	var input user.RegisterUserInput
 
 	err := c.ShouldBindJSON(&input)
-
 	if err != nil {
-
 		errors := helper.FormatValidationError(err)
-
 		errorMessage := gin.H{"errors": errors}
 
 		response := helper.APIResponse("Register account failed", http.StatusUnprocessableEntity, "error", errorMessage)
@@ -36,6 +33,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	}
 
 	newUser, err := h.userService.RegisterUser(input)
+
 	if err != nil {
 		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
@@ -51,7 +49,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 	formatter := user.FormatUser(newUser, token)
 
-	response := helper.APIResponse("Account has been resgitered", http.StatusOK, "success", formatter)
+	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
 
 	c.JSON(http.StatusOK, response)
 }
@@ -70,6 +68,7 @@ func (h *userHandler) Login(c *gin.Context) {
 	}
 
 	loggedinUser, err := h.userService.Login(input)
+
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 
@@ -87,7 +86,7 @@ func (h *userHandler) Login(c *gin.Context) {
 
 	formatter := user.FormatUser(loggedinUser, token)
 
-	response := helper.APIResponse("Successfully loggedin", http.StatusOK, "success", formatter)
+	response := helper.APIResponse("Successfuly loggedin", http.StatusOK, "success", formatter)
 
 	c.JSON(http.StatusOK, response)
 
@@ -106,23 +105,22 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 		return
 	}
 
-	IsEmailAvailabel, err := h.userService.IsEmailAvailabel(input)
+	isEmailAvailable, err := h.userService.IsEmailAvailable(input)
 	if err != nil {
-		errorMessage := gin.H{"errors": "Server error!"}
-
+		errorMessage := gin.H{"errors": "Server error"}
 		response := helper.APIResponse("Email checking failed", http.StatusUnprocessableEntity, "error", errorMessage)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
 	data := gin.H{
-		"is_availabel": IsEmailAvailabel,
+		"is_available": isEmailAvailable,
 	}
 
 	metaMessage := "Email has been registered"
 
-	if IsEmailAvailabel {
-		metaMessage = "Email is availabel"
+	if isEmailAvailable {
+		metaMessage = "Email is available"
 	}
 
 	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
@@ -139,8 +137,8 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	currentuser := c.MustGet("currentUser").(user.User)
-	userID := currentuser.ID
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
 
 	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
 
@@ -163,8 +161,19 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	}
 
 	data := gin.H{"is_uploaded": true}
-	response := helper.APIResponse("Avatar successuly uploaded", http.StatusOK, "success", data)
+	response := helper.APIResponse("Avatar successfuly uploaded", http.StatusOK, "success", data)
 
 	c.JSON(http.StatusOK, response)
-	return
+}
+
+func (h *userHandler) FetchUser(c *gin.Context) {
+
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	formatter := user.FormatUser(currentUser, "")
+
+	response := helper.APIResponse("Successfuly fetch user data", http.StatusOK, "success", formatter)
+
+	c.JSON(http.StatusOK, response)
+
 }

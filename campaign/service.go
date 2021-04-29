@@ -19,14 +19,13 @@ type service struct {
 	repository Repository
 }
 
-func NewSercive(repository Repository) *service {
+func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
 func (s *service) GetCampaigns(userID int) ([]Campaign, error) {
 	if userID != 0 {
 		campaigns, err := s.repository.FindByUserID(userID)
-
 		if err != nil {
 			return campaigns, err
 		}
@@ -35,7 +34,6 @@ func (s *service) GetCampaigns(userID int) ([]Campaign, error) {
 	}
 
 	campaigns, err := s.repository.FindAll()
-
 	if err != nil {
 		return campaigns, err
 	}
@@ -111,7 +109,7 @@ func (s *service) SaveCampaignImage(input CreateCampaignImageInput, fileLocation
 	if input.IsPrimary {
 		isPrimary = 1
 
-		_, err := s.repository.MarkAllImageAsNonPrimary(input.CampaignID)
+		_, err := s.repository.MarkAllImagesAsNonPrimary(input.CampaignID)
 		if err != nil {
 			return CampaignImage{}, err
 		}
