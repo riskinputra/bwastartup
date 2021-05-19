@@ -97,7 +97,7 @@ func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
 
 	campaignUserFormatter := CampaignUserFormatter{}
 	campaignUserFormatter.Name = user.Name
-	// campaignUserFormatter.ImageURL = user.AvatarFileName
+	campaignUserFormatter.ImageURL = user.AvatarFileName
 
 	campaignDetailFormatter.User = campaignUserFormatter
 

@@ -14,7 +14,7 @@ type Service interface {
 type jwtService struct {
 }
 
-var SECRET_KEY = []byte("BWASTARTUUP_s3cr3t_k3y")
+var SECRET_KEY = []byte("BWASTARTUP_s3cr3T_k3Y")
 
 func NewService() *jwtService {
 	return &jwtService{}
@@ -33,13 +33,12 @@ func (s *jwtService) GenerateToken(userID int) (string, error) {
 
 	return signedToken, nil
 }
-
 func (s *jwtService) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 
 		if !ok {
-			return nil, errors.New("Invalid Token")
+			return nil, errors.New("Invalid token")
 		}
 
 		return []byte(SECRET_KEY), nil
